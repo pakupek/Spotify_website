@@ -5,13 +5,13 @@
         <div class="container py-4">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="display-4">Artists Menu</h1>
+                    <h1 class="display-4">Artists Page</h1>
                 </div>
             </div>
             <div class="row pt-5">
                 <div class="col-lg-10 mx-auto">
-                    {% for artist in artists %}
-                    <p class="lead">{{artist.name}}</p>
+                    {% for artists in artists %}
+                    <p class="lead">{{artist.albums}}</p>
                     <p class="lead">Set the <code>.dropdown</code> position to <code>static</code> instead of <code>absolute</code>.</p>
                     <p class="lead">We use the class <code>.megamenu</code> to hold this <code>static</code> position.</p>
                     {% endfor %}

@@ -3,9 +3,13 @@ import requests
 import datetime
 from urllib.parse import urlencode
 
+
+#hide client_id and client_secret (still to do!!)
 client_id = '67b2ba6ce11547e6b7f5d8459aaaa09c'
 client_secret = '4cd84636dbec44efb84c9bac251a9aa0'
 
+#Api models to used from here and place it into app.py file
+#For homepage i need to create another method that allows me to get for example newest tracks released on spotify (to do!!)
 class SpotifyAPI(object):
     access_token = None
     access_token_expires = datetime.datetime.now()
@@ -79,7 +83,7 @@ class SpotifyAPI(object):
         }
         return headers
 
-    def get_resource(self, lookup_id, resource_type='albums', version='v1'):
+    def get_resources(self, lookup_id, resource_type='albums', version='v1'):
         endpoint = f"https://api.spotify.com/{version}/{resource_type}/{lookup_id}"
         headers = self.get_resource_header()
         r = requests.get(endpoint, headers=headers)
@@ -87,11 +91,33 @@ class SpotifyAPI(object):
             return {}
         return r.json()
 
+    def get_resource(self, resource_type='artists', version='v1'):
+        endpoint = f"https://api.spotify.com/{version}/{resource_type}"
+        headers = self.get_resource_header()
+        r = requests.get(endpoint, headers=headers)
+        if r.status_code not in range(200,299):
+            return {}
+        return r.json()
+
     def get_album(self, _id):
-        return self.get_resource(_id, resource_type='albums')
+        return self.get_resources(_id, resource_type='albums')
         
     def get_artist(self, _id):
-        return self.get_resource(_id, resource_type='artists')
+        return self.get_resources(_id, resource_type='artists')
+    #Not working
+    def get_several_artists(self):
+        return self.get_resource(resource_type='artists')
+
+    def get_new_releases(self):
+        endpoint = f"https://api.spotify.com/v1/browse/new-releases"
+        headers = self.get_resource_header()
+        r = requests.get(endpoint, headers=headers)
+        response = r.json()
+        if r.status_code not in range(200,299):
+            return {}
+        return response['albums']['items']
+        
+        #return self.get_resource(resource_type="browse/new-releases")
 
     def search(self, query, search_type='artist'):
         headers = self.get_resource_header()
@@ -120,9 +146,10 @@ class SpotifyAPI(object):
 
 client = SpotifyAPI(client_id, client_secret)
 #print(client.get_artist("1hCkSJcXREhrodeIHQdav8"))
-print(client.improved_search(query="Time", operator="NOT", operator_query="Billie Ellish", search_type="track"))
+print(client.get_new_releases())
+#print(client.improved_search(query="Time", operator="NOT", operator_query="Billie Ellish", search_type="track"))
 #print(client.search("A lannister always pays his debts", search_type="track"))
-client.access_token
+
 
 #Propper search endpoint
 def endpoint_data():

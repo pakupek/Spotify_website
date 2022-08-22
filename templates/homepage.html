@@ -79,6 +79,10 @@
   
         <!-- For demo purpose -->
         {% block content %}
+            {% for releases in releases %}
+                <p class="lead">{{releases.name}}</p>
+                <p class="lead">{{releases.release_date}}</p>
+            {% endfor %}
         {% endblock %}
     </body>
 </html>
