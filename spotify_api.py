@@ -71,6 +71,7 @@ class SpotifyAPI(object):
             return self.get_access_token()
         return token
 
+    #Getting resources area
     def get_resource_header(self):
         access_token = self.get_access_token()
         headers = {
@@ -92,7 +93,6 @@ class SpotifyAPI(object):
     def get_artist(self, _id):
         return self.get_resource(_id, resource_type='artists')
 
-
     def search(self, query, search_type='artist'):
         headers = self.get_resource_header()
         endpoint = "https://api.spotify.com/v1/search"
@@ -102,11 +102,25 @@ class SpotifyAPI(object):
         if r.status_code in range(200,299):
             return r.json()
         return {}
+    
+    def improved_search(self, query=None, operator=None, operator_query=None, search_type='artist'):
+        if query == None:
+            raise Exception("A query is required")
+        if isinstance(query, dict):
+            query = " ".join([f"{k}:{v}" for k,v in query.items()])
+        if operator != None and operator_query != None:
+            if operator.lower() == "or" or operator.lower() == "not":
+                operator = operator.upper()
+                if isinstance(operator_query, str):
+                    query = f"{query} {operator} {operator_query}"
+        query_params = urlencode({"q": query, "type": search_type.lower()})
+        return self.search(query_params)
+
 
 
 client = SpotifyAPI(client_id, client_secret)
 #print(client.get_artist("1hCkSJcXREhrodeIHQdav8"))
-print(client.get_album("41zMFsCjcGenYKVJYUXU2n"))
+print(client.improved_search(query="Time", operator="NOT", operator_query="Billie Ellish", search_type="track"))
 #print(client.search("A lannister always pays his debts", search_type="track"))
 client.access_token
 
